@@ -1,0 +1,2 @@
+Aplikacja ekspercka z możliwością rejestracji konta, dodania klienta, zdobyciu informacji na temat swojej sieci.
+Autor: Brajan Jaworski
