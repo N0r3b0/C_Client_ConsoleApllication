@@ -37,6 +37,6 @@ char *readtxt(char *file_name)
 
 void description()
 {
-    char *descrpt = readtxt("description.txt");
+    char *descrpt = readtxt("./src/description.txt");
     printf("\n%s\n", descrpt);
 }
