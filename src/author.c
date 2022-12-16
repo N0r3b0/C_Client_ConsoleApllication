@@ -37,6 +37,6 @@ char *readtxt(char *file_name)
 
 void description()
 {
-    char *descrpt = readtxt("D:\\Programowanie\\Programowanie_git\\1_MojeProjekty\\OskarProjekt\\final\\description.txt");
+    char *descrpt = readtxt("description.txt");
     printf("\n%s\n", descrpt);
 }
