@@ -11,7 +11,7 @@ void saveUserList()
     {
         printf("ERROR: file didn't open correctly");
         return;
-    }
+    } 
 
     // UsersList *users2 = malloc(sizeof(UsersList));
 

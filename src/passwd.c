@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "clientArray.c"
 
 #define passwdSize 30
 
@@ -9,13 +10,18 @@ typedef struct User
 {
     char userName[passwdSize];
     char password[passwdSize];
+    Client userClientAcc;
     bool logged;
+    bool clientConnected;
 } User;
 typedef struct UsersList
 {
     User *list;
     size_t size;
 } UsersList;
+
+ClientArrayList list;
+int globalID = 0;
 
 User admin = {"Admin", "Admin123", false};
 
@@ -49,7 +55,8 @@ void createUser()
         printf("\ntype back for going back\n");
         printf("Your username: ");
         scanf("%s", newUser.userName);
-        if(strcmp(newUser.userName, "back") == 0) return;
+        if (strcmp(newUser.userName, "back") == 0)
+            return;
         if (strcmp(newUser.userName, admin.userName) == 0)
         {
             printf("You can't name yourself Admin\n");
@@ -57,14 +64,16 @@ void createUser()
         }
         printf("Your password: ");
         scanf("%s", newUser.password);
-        if(strcmp(newUser.password, "back") == 0) return;
+        if (strcmp(newUser.password, "back") == 0)
+            return;
         int check = findUsernameInList(newUser);
         if (check != -1)
         {
             printf("This username is already taken, try again\n");
             continue;
         }
-        newUser.logged == false;
+        newUser.logged = false;
+        newUser.clientConnected = false;
         users.size++;
         users.list = realloc(users.list, sizeof(User) * users.size);
         users.list[users.size - 1] = newUser;
@@ -84,7 +93,8 @@ User createUserCustom(char username[passwdSize], char password[passwdSize]) //? 
             printf("This username is already taken, try again\n");
             continue;
         }
-        newUser.logged == false;
+        newUser.logged = false;
+        newUser.clientConnected = false;
         users.size++;
         users.list = realloc(users.list, sizeof(User) * users.size);
         users.list[users.size - 1] = newUser;
@@ -124,7 +134,7 @@ void rmUser()
     scanf("%s", user.password);
     int index = findUserInList(user);
     if (index == -1)
-    {   
+    {
         printf("\nWrong username or password\n\n");
         return;
     }
@@ -147,7 +157,7 @@ void rmUser()
     if (user.logged == false)
         printf("Invalid username or password");
 } */
-void login() 
+void login()
 {
     if (isLogged == true)
     {
@@ -205,24 +215,78 @@ void loginInf()
     printf("Account: %s\n", loggedUser.userName);
 }
 
+void connectClientToUser(User user, Client client)
+{
+    if (user.clientConnected == true)
+        printf("\nThis account already has client connceted\n");
+
+    if (user.clientConnected == false)
+    {
+        printf("\nYour account has been successfully conencted\n");
+        user.userClientAcc = client;
+        user.clientConnected = true;
+    }
+}
+
+void createClient()
+{
+    while (1)
+    {
+        Client newClient;
+        printf("\nPASS THE INFORMATION ABOUT YOU AND YOUR PROVIDER\n");
+        printf("\ntype back for going back\n");
+        printf("Your name: ");
+        scanf("%s", newClient.name);
+        if (strcmp(newClient.name, "back") == 0)
+            return;
+
+        printf("Your last name: ");
+        scanf("%s", newClient.lastname);
+        if (strcmp(newClient.lastname, "back") == 0)
+            return;
+
+        printf("Your age: ");
+        int age;
+        scanf("%d", &age);
+        newClient.age = age;
+
+        printf("Select your internet provider from list below (numbers only): \n");
+        int selected;
+        listOfProviders();
+        scanf("%d", &selected);
+        if (selected < 0 || selected > 4)
+        {
+            printf("wrong provider");
+            continue;
+        }
+        newClient.netProvider = selected;
+
+        // int check = findInArray(&list, newClient);
+
+        globalID++;
+        newClient.id = globalID;
+        list.size++;
+        list.array = realloc(list.array, sizeof(Client) * list.size);
+        list.array[list.size - 1] = newClient;
+        int index = findUserInList(loggedUser);
+        connectClientToUser(users.list[index], newClient);
+        return;
+    }
+}
 void printUsers()
 {
-    if(users.size == 0)
+    if (users.size == 0)
         printf("\nList of users is empty\n");
     for (int id = 0; id < users.size; id++)
     {
         printf("Username: %s, Password: %s\n", users.list[id].userName, users.list[id].password);
+        //printf("%s", clientToString(users.list[id].userClientAcc));
     }
 }
-/* int main(void)
+/* int main(void) // false 0, true 1
 {
-    createUserCustom("User1", "Password1");
-    //login();
-    int choice;
-    while(1)
-    {
-    loginInf();
-    scanf("%d", &choice);
-    }
+    User u1 = createUserCustom("User1", "Password1");
+    Client *c1 = newClientCustom("Adam", "Mickiewicz", 53, 2, orange);
+    createClient();
     return 0;
 } */
